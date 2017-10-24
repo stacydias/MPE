@@ -5,6 +5,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -24,8 +26,8 @@ import android.widget.TextView;
 
 public class AllSongsView extends Activity {
 
-    private Cursor videocursor;
-    private int video_column_index;
+    private Cursor audiocursor;
+    private int song_column_index;
     ListView videolist;
     int count;
     MediaPlayer mp;
@@ -42,8 +44,8 @@ public class AllSongsView extends Activity {
         String []proj={MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME,
                 MediaStore.Audio.Media.SIZE};
 
-        videocursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,proj,null,null,null);
-        count = videocursor.getCount();
+        audiocursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,proj,null,null,null);
+        count = audiocursor.getCount();
 
         videolist = (ListView)findViewById(R.id.listView);
         videolist.setAdapter(new MusicAdapter(getApplicationContext()));
@@ -54,10 +56,10 @@ public class AllSongsView extends Activity {
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            video_column_index=videocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-            videocursor.moveToPosition(position);
+            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            audiocursor.moveToPosition(position);
 
-            String filename=videocursor.getString(video_column_index);
+            String filename=audiocursor.getString(song_column_index);
 
             try{
                 if (mp.isPlaying()){
@@ -105,20 +107,41 @@ public class AllSongsView extends Activity {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.listitem,parent,false);
 
                 holder = new ViewHolder();
-                holder.txtTitle =(TextView) convertView.findViewById(R.id.textView11);
-                holder.txtSize=(TextView) convertView.findViewById(R.id.textView10);
+                holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
+                holder.song_size=(TextView) convertView.findViewById(R.id.textView10);
+                holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
+                holder.song_album=(TextView) convertView.findViewById(R.id.textView8);
                 holder.thumbImage=(ImageView) convertView.findViewById(R.id.imageView2);
 
-                video_column_index= videocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
-                videocursor.moveToPosition(position);
-                id=videocursor.getString(video_column_index);
-                video_column_index=videocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
-                videocursor.moveToPosition(position);
-
-                holder.txtTitle.setText(id);
-                holder.txtSize.setText("Size (KB): "+videocursor.getString(video_column_index));
 
 
+                song_column_index= audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                audiocursor.moveToPosition(position);
+
+
+                id=audiocursor.getString(song_column_index);
+
+                song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
+                audiocursor.moveToPosition(position);
+
+                holder.col1=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST);
+                audiocursor.moveToPosition(position);
+
+                holder.col2=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
+                audiocursor.moveToPosition(position);
+
+                holder.col3=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART);
+                audiocursor.moveToPosition(position);
+
+                holder.song_title.setText(id);
+                holder.song_size.setText("Size: "+audiocursor.getString(song_column_index));
+                holder.song_artist.setText("Artist:"+audiocursor.getString(holder.col1));
+                holder.song_album.setText("Album:"+audiocursor.getString(holder.col2));
+                //holder.thumbImage.setImageBitmap(audiocursor.song_column_index);
+                Bitmap coverBitmap= BitmapFactory.decodeFile(audiocursor.getString(holder.col3));
+                holder.thumbImage.setImageBitmap(coverBitmap);
+
+                //convertView.setTag(holder);
             }
 
             return convertView;
@@ -126,9 +149,14 @@ public class AllSongsView extends Activity {
     }
     static class ViewHolder{
 
-        TextView txtTitle;
-        TextView txtSize;
+        TextView song_title;
+        TextView song_size;
+        TextView song_artist;
+        TextView song_album;
         ImageView thumbImage;
+
+        int col1,col2,col3;
+
     }
 }
 

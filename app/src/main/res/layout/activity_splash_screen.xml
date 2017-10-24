@@ -13,9 +13,9 @@
         android:layout_height="80dp"
         android:layout_weight="1"
         app:srcCompat="@drawable/music_player_icon"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/textView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="151dp" />
+        android:layout_marginBottom="14dp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Version 1.0"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="243dp" />
 
 </RelativeLayout>
