@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
 public class AllSongsView extends Activity {
 
@@ -112,10 +113,6 @@ public class AllSongsView extends Activity {
 
 
 
-                song_column_index= audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
-                audiocursor.moveToPosition(position);
-                id = audiocursor.getString(song_column_index);
-                holder.song_title.setText(id);
                 song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
                 audiocursor.moveToPosition(position);
                 holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
@@ -126,6 +123,15 @@ public class AllSongsView extends Activity {
                 String filepath = audiocursor.getString(dataIndex);
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 mmr.setDataSource(filepath);
+                if (mmr.extractMetadata(METADATA_KEY_TITLE) != null) {
+                    holder.song_title.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
+                }
+                else {
+                    song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                    audiocursor.moveToPosition(position);
+                    id = audiocursor.getString(song_column_index);
+                    holder.song_title.setText(id);
+                }
                 holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
                 holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
                 byte[] art = mmr.getEmbeddedPicture();
@@ -136,6 +142,7 @@ public class AllSongsView extends Activity {
                 else {
                     holder.thumbImage.setImageDrawable(getDrawable(R.drawable.music_player_icon));
                 }
+                mmr.release();
                 //convertView.setTag(holder);
             }
 
