@@ -1,19 +1,13 @@
 package com.example.stacy.themusicplayer;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class AllSongsView extends Activity {
@@ -117,29 +110,44 @@ public class AllSongsView extends Activity {
 
                 song_column_index= audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
                 audiocursor.moveToPosition(position);
-
+                holder.song_title.setText(id);
 
                 id=audiocursor.getString(song_column_index);
+                try {
+                    song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
+                    audiocursor.moveToPosition(position);
+                    holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
+                }
+                catch (IllegalArgumentException e) {
+                    holder.song_size.setText("Size: undefined");
+                }
+                try {
+                    holder.col1 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST);
+                    audiocursor.moveToPosition(position);
+                    holder.song_artist.setText("Artist:"+audiocursor.getString(holder.col1));
+                }
+                catch (IllegalArgumentException e) {
+                    holder.song_artist.setText("Artist: {}");
+                }
+                try {
+                    holder.col2 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
+                    audiocursor.moveToPosition(position);
+                    holder.song_album.setText("Album:"+audiocursor.getString(holder.col2));
+                }
+                catch (IllegalArgumentException e) {
+                    holder.song_album.setText("Album: {}");
+                }
+                try {
+                    holder.col3 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART);
+                    audiocursor.moveToPosition(position);
+                    //holder.thumbImage.setImageBitmap(audiocursor.song_column_index);
+                    Bitmap coverBitmap= BitmapFactory.decodeFile(audiocursor.getString(holder.col3));
+                    holder.thumbImage.setImageBitmap(coverBitmap);
+                }
+                catch ( IllegalArgumentException e) {
+                    holder.thumbImage.setImageDrawable(getDrawable(R.drawable.music_player_icon));
+                }
 
-                song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
-                audiocursor.moveToPosition(position);
-
-                holder.col1=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST);
-                audiocursor.moveToPosition(position);
-
-                holder.col2=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
-                audiocursor.moveToPosition(position);
-
-                holder.col3=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART);
-                audiocursor.moveToPosition(position);
-
-                holder.song_title.setText(id);
-                holder.song_size.setText("Size: "+audiocursor.getString(song_column_index));
-                holder.song_artist.setText("Artist:"+audiocursor.getString(holder.col1));
-                holder.song_album.setText("Album:"+audiocursor.getString(holder.col2));
-                //holder.thumbImage.setImageBitmap(audiocursor.song_column_index);
-                Bitmap coverBitmap= BitmapFactory.decodeFile(audiocursor.getString(holder.col3));
-                holder.thumbImage.setImageBitmap(coverBitmap);
 
                 //convertView.setTag(holder);
             }
