@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,6 +17,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
 public class AllSongsView extends Activity {
 
@@ -108,47 +113,36 @@ public class AllSongsView extends Activity {
 
 
 
-                song_column_index= audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
                 audiocursor.moveToPosition(position);
-                holder.song_title.setText(id);
+                holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
 
-                id=audiocursor.getString(song_column_index);
-                try {
-                    song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
+                //Extracting metadata from file
+                int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+                audiocursor.moveToPosition(position);
+                String filepath = audiocursor.getString(dataIndex);
+                MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                mmr.setDataSource(filepath);
+                if (mmr.extractMetadata(METADATA_KEY_TITLE) != null) {
+                    holder.song_title.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
+                }
+                else {
+                    song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
                     audiocursor.moveToPosition(position);
-                    holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
+                    id = audiocursor.getString(song_column_index);
+                    holder.song_title.setText(id);
                 }
-                catch (IllegalArgumentException e) {
-                    holder.song_size.setText("Size: undefined");
+                holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
+                holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
+                byte[] art = mmr.getEmbeddedPicture();
+                if (art != null) {
+                    Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);
+                    holder.thumbImage.setImageBitmap(songImage);
                 }
-                try {
-                    holder.col1 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST);
-                    audiocursor.moveToPosition(position);
-                    holder.song_artist.setText("Artist:"+audiocursor.getString(holder.col1));
-                }
-                catch (IllegalArgumentException e) {
-                    holder.song_artist.setText("Artist: {}");
-                }
-                try {
-                    holder.col2 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
-                    audiocursor.moveToPosition(position);
-                    holder.song_album.setText("Album:"+audiocursor.getString(holder.col2));
-                }
-                catch (IllegalArgumentException e) {
-                    holder.song_album.setText("Album: {}");
-                }
-                try {
-                    holder.col3 = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART);
-                    audiocursor.moveToPosition(position);
-                    //holder.thumbImage.setImageBitmap(audiocursor.song_column_index);
-                    Bitmap coverBitmap= BitmapFactory.decodeFile(audiocursor.getString(holder.col3));
-                    holder.thumbImage.setImageBitmap(coverBitmap);
-                }
-                catch ( IllegalArgumentException e) {
+                else {
                     holder.thumbImage.setImageDrawable(getDrawable(R.drawable.music_player_icon));
                 }
-
-
+                mmr.release();
                 //convertView.setTag(holder);
             }
 
