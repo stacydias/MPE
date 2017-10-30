@@ -1,13 +1,17 @@
 package com.example.stacy.themusicplayer;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,15 +33,41 @@ public class AllSongsView extends Activity {
     ListView videolist;
     int count;
     MediaPlayer mp;
+    public MusicService musicService;
+    private Intent playIntent;
+    private boolean isBound = false;
+    private ServiceConnection serviceConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_songs_view);
-
-
         init_phone_music_grid();
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+                musicService = binder.getService();
+                isBound = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                isBound = false;
+            }
+        };
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(playIntent==null){
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+
     private void init_phone_music_grid(){
         String []proj={MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME,
                 MediaStore.Audio.Media.SIZE};
@@ -56,22 +86,24 @@ public class AllSongsView extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
             audiocursor.moveToPosition(position);
-
             String filename=audiocursor.getString(song_column_index);
 
-            try{
-                if (mp.isPlaying()){
-                    mp.reset();
-                }
-                mp.setDataSource(filename);
-                mp.prepare();
-                mp.start();
-            }catch (Exception e){
-
+            if(musicService.isPlaying() && musicService.sameSong(position)) {
+                musicService.pauseSong();
             }
-
+            else {
+                musicService.setSong(filename, position);
+                musicService.playSong();
+            }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
+    }
 
     public class MusicAdapter extends BaseAdapter{
 
