@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
 public class AllSongsView extends Activity {
@@ -138,17 +139,17 @@ public class AllSongsView extends Activity {
 
                 holder = new ViewHolder();
                 holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
-                holder.song_size=(TextView) convertView.findViewById(R.id.textView10);
+                holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
                 holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
                 holder.song_album=(TextView) convertView.findViewById(R.id.textView8);
                 holder.thumbImage=(ImageView) convertView.findViewById(R.id.imageView2);
 
 
-
-                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
+                /*
+                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
                 audiocursor.moveToPosition(position);
                 holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
-
+                */
                 //Extracting metadata from file
                 int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
                 audiocursor.moveToPosition(position);
@@ -164,6 +165,7 @@ public class AllSongsView extends Activity {
                     id = audiocursor.getString(song_column_index);
                     holder.song_title.setText(id);
                 }
+                holder.song_duration.setText(mmr.extractMetadata(METADATA_KEY_DURATION));
                 holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
                 holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
                 byte[] art = mmr.getEmbeddedPicture();
@@ -172,7 +174,7 @@ public class AllSongsView extends Activity {
                     holder.thumbImage.setImageBitmap(songImage);
                 }
                 else {
-                    holder.thumbImage.setImageDrawable(getDrawable(R.drawable.music_player_icon));
+                    holder.thumbImage.setImageDrawable(getDrawable(R.drawable.blank_song));
                 }
                 mmr.release();
                 //convertView.setTag(holder);
@@ -184,7 +186,7 @@ public class AllSongsView extends Activity {
     static class ViewHolder{
 
         TextView song_title;
-        TextView song_size;
+        TextView song_duration;
         TextView song_artist;
         TextView song_album;
         ImageView thumbImage;

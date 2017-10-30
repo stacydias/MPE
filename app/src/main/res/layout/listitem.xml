@@ -7,9 +7,9 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="5dp"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:padding="8dp"
         app:srcCompat="@drawable/music_player_icon" />
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:id="@+id/textView11" />
 
         <TextView
-            android:text="Size"
+            android:text="Duration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#0d0e0d"
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Album Name"
-            android:paddingBottom="16dp"/>
+            android:paddingBottom="14dp"/>
     </LinearLayout>
 
 
