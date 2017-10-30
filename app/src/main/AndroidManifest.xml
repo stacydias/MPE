@@ -6,6 +6,7 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -26,6 +27,7 @@
         <activity android:name=".AllSongsView" />
         <activity android:name=".AllArtistsView" />
         <activity android:name=".AllAlbumsView" />
+        <service android:name=".MusicService" android:enabled="true" />
     </application>
 
 </manifest>
