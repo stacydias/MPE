@@ -1,6 +1,8 @@
 package com.example.stacy.themusicplayer;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +11,7 @@ import android.media.MediaPlayer;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +42,19 @@ public class AllArtistsView extends AppCompatActivity {
         init_phone_music_grid();
     }
     private void init_phone_music_grid(){
-        String []proj={MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ARTIST_ID, MediaStore.Audio.Media.ARTIST};
+        String []proj={MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST,
+                MediaStore.Audio.Artists.NUMBER_OF_TRACKS, MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
+                ,MediaStore.Audio.Media
+                .ARTIST};
+        //String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
+        try {
+            audiocursor = managedQuery(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, proj, null, null, null);
+            count = audiocursor.getCount();
 
-        audiocursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,proj,null,null,null);
-        count = audiocursor.getCount();
+        }
+        catch(Exception e){
+            Log.e("Database Helper", "query:" +e);
+        }
 
         songlist = (ListView)findViewById(R.id.listView1);
         songlist.setAdapter(new AllArtistsView.MusicAdapter(getApplicationContext()));
@@ -53,12 +65,13 @@ public class AllArtistsView extends AppCompatActivity {
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST);
             audiocursor.moveToPosition(position);
 
             String filename=audiocursor.getString(song_column_index);
+            String artist_name=MediaStore.Audio.Media.ARTIST_ID;
 
-            try{
+            /*try{
                 if (mp.isPlaying()){
                     mp.reset();
                 }
@@ -66,9 +79,11 @@ public class AllArtistsView extends AppCompatActivity {
                 mp.prepare();
                 mp.start();
             }catch (Exception e){
-
-            }
-
+                e.printStackTrace();
+            }*/
+            Intent i= new Intent(AllArtistsView.this,ArtistsSongs.class);
+            getIntent().putExtra(artist_name,MediaStore.Audio.Artists.ARTIST);
+            startActivity(i);
         }
     };
 
@@ -97,53 +112,25 @@ public class AllArtistsView extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            AllSongsView.ViewHolder holder;
+            ViewHolder holder;
             String id=null;
             convertView = null;
             if(convertView ==null){
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.listitem,parent,false);
 
-                holder = new AllSongsView.ViewHolder();
-                holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
-                holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
-                holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
-                holder.song_album=(TextView) convertView.findViewById(R.id.textView8);
-                holder.thumbImage=(ImageView) convertView.findViewById(R.id.imageView2);
+                holder = new ViewHolder();
+                holder.song_artist =(TextView) convertView.findViewById(R.id.textView7);
 
+                song_column_index= audiocursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
+                audiocursor.moveToPosition(position);
+                id=audiocursor.getString(song_column_index);
+                if(holder.song_artist!=null) {
+                    holder.song_artist.setText(id);
+                    }
+                    else{
+                    holder.song_artist.setText("Unavailable");
+                    }
 
-                /*
-                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
-                audiocursor.moveToPosition(position);
-                holder.song_size.setText("Size: " + audiocursor.getString(song_column_index));
-                */
-                //Extracting metadata from file
-                int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                audiocursor.moveToPosition(position);
-                String filepath = audiocursor.getString(dataIndex);
-                MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                mmr.setDataSource(filepath);
-                if (mmr.extractMetadata(METADATA_KEY_TITLE) != null) {
-                    holder.song_title.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
-                }
-                else {
-                    song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
-                    audiocursor.moveToPosition(position);
-                    id = audiocursor.getString(song_column_index);
-                    holder.song_title.setText(id);
-                }
-                holder.song_duration.setText(mmr.extractMetadata(METADATA_KEY_DURATION));
-                holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
-                holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
-                byte[] art = mmr.getEmbeddedPicture();
-                if (art != null) {
-                    Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);
-                    holder.thumbImage.setImageBitmap(songImage);
-                }
-                else {
-                    holder.thumbImage.setImageDrawable(getDrawable(R.drawable.blank_song));
-                }
-                mmr.release();
-                //convertView.setTag(holder);
             }
 
             return convertView;
@@ -151,13 +138,9 @@ public class AllArtistsView extends AppCompatActivity {
     }
     static class ViewHolder{
 
-        TextView song_title;
-        TextView song_duration;
+        //TextView song_title;
         TextView song_artist;
-        TextView song_album;
-        ImageView thumbImage;
-
-        int col1,col2,col3;
+        //TextView song_album;
 
     }
 }

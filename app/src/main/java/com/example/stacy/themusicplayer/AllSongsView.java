@@ -156,6 +156,7 @@ public class AllSongsView extends Activity {
                 String filepath = audiocursor.getString(dataIndex);
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 mmr.setDataSource(filepath);
+
                 if (mmr.extractMetadata(METADATA_KEY_TITLE) != null) {
                     holder.song_title.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
                 }
