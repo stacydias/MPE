@@ -44,8 +44,7 @@ public class AllArtistsView extends AppCompatActivity {
     private void init_phone_music_grid(){
         String []proj={MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST,
                 MediaStore.Audio.Artists.NUMBER_OF_TRACKS, MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
-                ,MediaStore.Audio.Media
-                .ARTIST};
+                ,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Artists.ARTIST_KEY};
         //String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
         try {
             audiocursor = managedQuery(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, proj, null, null, null);
@@ -116,7 +115,7 @@ public class AllArtistsView extends AppCompatActivity {
             String id=null;
             convertView = null;
             if(convertView ==null){
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.listitem,parent,false);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.artistlist,parent,false);
 
                 holder = new ViewHolder();
                 holder.song_artist =(TextView) convertView.findViewById(R.id.textView7);
@@ -124,13 +123,7 @@ public class AllArtistsView extends AppCompatActivity {
                 song_column_index= audiocursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
                 audiocursor.moveToPosition(position);
                 id=audiocursor.getString(song_column_index);
-                if(holder.song_artist!=null) {
-                    holder.song_artist.setText(id);
-                    }
-                    else{
-                    holder.song_artist.setText("Unavailable");
-                    }
-
+                holder.song_artist.setText(id);
             }
 
             return convertView;
