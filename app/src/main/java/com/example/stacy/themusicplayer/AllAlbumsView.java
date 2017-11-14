@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
@@ -57,7 +59,7 @@ public class AllAlbumsView extends AppCompatActivity {
             Log.e("Database Helper", "query:" +e);
         }
 
-        songlist = (GridView)findViewById(R.id.agv);
+        songlist = (ListView) findViewById(R.id.agv);
         songlist.setAdapter(new AllAlbumsView.MusicAdapter(getApplicationContext()));
         songlist.setOnItemClickListener(musicgridlistener);
         mp= new MediaPlayer();
