@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.stacy.themusicplayer">
 
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -22,12 +20,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity" />
         <activity android:name=".MainPlayerList" />
         <activity android:name=".AllSongsView" />
         <activity android:name=".AllArtistsView" />
         <activity android:name=".AllAlbumsView" />
-        <service android:name=".MusicService" android:enabled="true" />
+
+        <service
+            android:name=".MusicService"
+            android:enabled="true" />
+
+        <activity android:name=".ArtistsSongs"></activity>
     </application>
 
 </manifest>

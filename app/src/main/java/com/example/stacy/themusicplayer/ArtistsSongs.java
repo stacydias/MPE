@@ -1,6 +1,5 @@
 package com.example.stacy.themusicplayer;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +9,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +27,8 @@ import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
-public class AllSongsView extends Activity {
+public class ArtistsSongs extends AppCompatActivity {
+
 
     private Cursor audiocursor;
     private int song_column_index;
@@ -77,7 +78,7 @@ public class AllSongsView extends Activity {
         count = audiocursor.getCount();
 
         videolist = (ListView)findViewById(R.id.listView);
-        videolist.setAdapter(new MusicAdapter(getApplicationContext()));
+        videolist.setAdapter(new ArtistsSongs.MusicAdapter(getApplicationContext()));
         videolist.setOnItemClickListener(musicgridlistener);
         mp= new MediaPlayer();
     }
@@ -106,7 +107,7 @@ public class AllSongsView extends Activity {
         super.onDestroy();
     }
 
-    public class MusicAdapter extends BaseAdapter{
+    public class MusicAdapter extends BaseAdapter {
 
         private Context mContext;
         public MusicAdapter(Context c){
@@ -131,13 +132,13 @@ public class AllSongsView extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            ViewHolder holder;
+            AllSongsView.ViewHolder holder;
             String id=null;
             convertView = null;
             if(convertView ==null){
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.listitem,parent,false);
 
-                holder = new ViewHolder();
+                holder = new AllSongsView.ViewHolder();
                 holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
                 holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
                 holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
@@ -156,7 +157,6 @@ public class AllSongsView extends Activity {
                 String filepath = audiocursor.getString(dataIndex);
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 mmr.setDataSource(filepath);
-
                 if (mmr.extractMetadata(METADATA_KEY_TITLE) != null) {
                     holder.song_title.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
                 }
@@ -196,4 +196,3 @@ public class AllSongsView extends Activity {
 
     }
 }
-
