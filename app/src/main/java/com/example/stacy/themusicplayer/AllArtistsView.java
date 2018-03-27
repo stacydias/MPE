@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
@@ -30,6 +32,8 @@ public class AllArtistsView extends AppCompatActivity {
     private Cursor audiocursor;
     private int song_column_index;
     ListView songlist;
+    String WHERE = MediaStore.Audio.Media.ARTIST + "=?";
+    String orderby = null;
     int count;
     MediaPlayer mp;
 
@@ -42,9 +46,14 @@ public class AllArtistsView extends AppCompatActivity {
         init_phone_music_grid();
     }
     private void init_phone_music_grid(){
-        String []proj={MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST,
-                MediaStore.Audio.Artists.NUMBER_OF_TRACKS, MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
-                ,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Artists.ARTIST_KEY};
+        String []proj = {
+                MediaStore.Audio.Artists._ID,
+                MediaStore.Audio.Artists.ARTIST,
+                MediaStore.Audio.Artists.NUMBER_OF_TRACKS,
+                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Artists.ARTIST_KEY
+        };
         //String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
         try {
             audiocursor = managedQuery(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, proj, null, null, null);
@@ -64,11 +73,8 @@ public class AllArtistsView extends AppCompatActivity {
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST);
-            audiocursor.moveToPosition(position);
-
-            String filename=audiocursor.getString(song_column_index);
-            String artist_name=MediaStore.Audio.Media.ARTIST_ID;
+            String query = (String)  songlist.getAdapter().getItem(position);
+            String whereVal[] = { query};
 
             /*try{
                 if (mp.isPlaying()){
@@ -80,8 +86,9 @@ public class AllArtistsView extends AppCompatActivity {
             }catch (Exception e){
                 e.printStackTrace();
             }*/
-            Intent i= new Intent(AllArtistsView.this,ArtistsSongs.class);
-            getIntent().putExtra(artist_name,MediaStore.Audio.Artists.ARTIST);
+            Intent i= new Intent(AllArtistsView.this,AllSongsView.class);
+            i.putExtra("where", WHERE);
+            i.putExtra("whereVal", whereVal);
             startActivity(i);
         }
     };
@@ -89,6 +96,7 @@ public class AllArtistsView extends AppCompatActivity {
     public class MusicAdapter extends BaseAdapter {
 
         private Context mContext;
+        ArrayList<String> album_list = new ArrayList<>();
         public MusicAdapter(Context c){
             mContext=c;
         }
@@ -100,7 +108,7 @@ public class AllArtistsView extends AppCompatActivity {
 
         @Override
         public Object getItem(int position) {
-            return position;
+            return album_list.get(position);
         }
 
         @Override
@@ -124,6 +132,7 @@ public class AllArtistsView extends AppCompatActivity {
                 audiocursor.moveToPosition(position);
                 id=audiocursor.getString(song_column_index);
                 holder.song_artist.setText(id);
+                album_list.add(id);
             }
 
             return convertView;
