@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class AllAlbumsView extends AppCompatActivity {
     private Cursor audiocursor;
@@ -29,6 +32,9 @@ public class AllAlbumsView extends AppCompatActivity {
     ListView songlist;
     int count;
     MediaPlayer mp;
+    String WHERE = android.provider.MediaStore.Audio.Media.ALBUM + "=?";
+    String orderby = null;
+    MusicAdapter musicAdapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +65,8 @@ public class AllAlbumsView extends AppCompatActivity {
             Log.e("Database Helper", "query:" +e);
         }
         songlist = findViewById(R.id.albumlist);
-        songlist.setAdapter(new AllAlbumsView.MusicAdapter(getApplicationContext()));
+        musicAdapter = new AllAlbumsView.MusicAdapter(getApplicationContext());
+        songlist.setAdapter(musicAdapter);
         songlist.setOnItemClickListener(musicgridlistener);
         mp= new MediaPlayer();
     }
@@ -67,12 +74,13 @@ public class AllAlbumsView extends AppCompatActivity {
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
-            audiocursor.moveToPosition(position);
-
-            String filename=audiocursor.getString(song_column_index);
-            String artist_name=MediaStore.Audio.Media.ALBUM_ID;
-
+//            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
+//            audiocursor.moveToPosition(position);
+//
+//            String filename=audiocursor.getString(song_column_index);
+//            String albumname=MediaStore.Audio.Media.ALBUM_ID;
+            String query = (String)  songlist.getAdapter().getItem(position);
+            String whereVal[] = { query};
             /*try{
                 if (mp.isPlaying()){
                     mp.reset();
@@ -83,8 +91,9 @@ public class AllAlbumsView extends AppCompatActivity {
             }catch (Exception e){
                 e.printStackTrace();
             }*/
-            Intent i= new Intent(AllAlbumsView.this,ArtistsSongs.class);
-            getIntent().putExtra(artist_name,MediaStore.Audio.Albums.ALBUM);
+            Intent i= new Intent(AllAlbumsView.this,AllSongsView.class);
+            i.putExtra("where", WHERE);
+            i.putExtra("whereVal", whereVal);
             startActivity(i);
         }
     };
@@ -92,6 +101,7 @@ public class AllAlbumsView extends AppCompatActivity {
     public class MusicAdapter extends BaseAdapter {
 
         private Context mContext;
+        ArrayList<String> album_list = new ArrayList<String>();
         public MusicAdapter(Context c){
             mContext=c;
         }
@@ -102,8 +112,8 @@ public class AllAlbumsView extends AppCompatActivity {
         }
 
         @Override
-        public Object getItem(int position) {
-            return position;
+        public String getItem(int position) {
+            return album_list.get(position);
         }
 
         @Override
@@ -140,8 +150,9 @@ public class AllAlbumsView extends AppCompatActivity {
                 else {
                     holder.album_art.setImageDrawable(getDrawable(R.drawable.blank_song));
                 }
-            }
+                album_list.add(id);
 
+            }
             return convertView;
         }
     }

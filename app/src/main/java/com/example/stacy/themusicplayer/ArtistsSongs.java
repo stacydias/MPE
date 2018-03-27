@@ -71,8 +71,12 @@ public class ArtistsSongs extends AppCompatActivity {
     }
 
     private void init_phone_music_grid(){
-        String []proj={MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME,
-                MediaStore.Audio.Media.SIZE};
+        String []proj={
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media.SIZE
+        };
 
         audiocursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,proj,null,null,null);
         count = audiocursor.getCount();
