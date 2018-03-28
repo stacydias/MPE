@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,9 @@ public class AllArtistsView extends AppCompatActivity {
         init_phone_music_grid();
 
         back2=findViewById(R.id.back_button2);
+        Toolbar myToolbar = findViewById(R.id.artist_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(R.string.artists_act);
 
         back2.setOnClickListener(new View.OnClickListener() {
             @Override

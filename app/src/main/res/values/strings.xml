@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TheMusicPlayer</string>
     <string name="enter">Enter</string>
+    <string name="album_act">Albums</string>
+    <string name="all_songs_act">Songs</string>
+    <string name="artists_act">Artists</string>
 </resources>
