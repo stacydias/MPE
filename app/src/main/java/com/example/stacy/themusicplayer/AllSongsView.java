@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_LOCATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
 public class AllSongsView extends Activity {
@@ -41,7 +45,6 @@ public class AllSongsView extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_songs_view);
         Intent i = getIntent();
@@ -67,6 +70,7 @@ public class AllSongsView extends Activity {
                 isBound = false;
             }
         };
+
     }
 
     @Override
@@ -104,7 +108,6 @@ public class AllSongsView extends Activity {
 
     private void init_phone_music_grid() {
         init_phone_music_grid(null, null);
-
     }
 
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
@@ -113,14 +116,81 @@ public class AllSongsView extends Activity {
             song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
             audiocursor.moveToPosition(position);
             String filename=audiocursor.getString(song_column_index);
+            Log.d("ALLSONGVIEW", "filename val : "+filename);
 
+            String id_im=null;
+            int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            audiocursor.moveToPosition(position);
+            String filepath = audiocursor.getString(dataIndex);
+            Log.d("ALLSONGSView", "filepath val :  "+filepath);
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(filepath);
+
+            if (mmr.extractMetadata(METADATA_KEY_TITLE) == null) {
+                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                audiocursor.moveToPosition(position);
+                id_im = audiocursor.getString(song_column_index);
+            }
+            String song_im=mmr.extractMetadata(METADATA_KEY_TITLE);
+/**
             if(musicService.isPlaying() && musicService.sameSong(position)) {
                 musicService.pauseSong();
             }
             else {
                 musicService.setSong(filename, position);
                 musicService.playSong();
+            }**/
+
+
+            /**
+            musicService.setSong(filename, position);
+            musicService.playSong();
+
+            String id_im=null;
+            int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            audiocursor.moveToPosition(position);
+            String filepath = audiocursor.getString(dataIndex);
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(filepath);
+
+            if (mmr.extractMetadata(METADATA_KEY_TITLE) == null) {
+                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                audiocursor.moveToPosition(position);
+                id_im = audiocursor.getString(song_column_index);
             }
+            String song_im=mmr.extractMetadata(METADATA_KEY_TITLE);
+            String duration_im = mmr.extractMetadata(METADATA_KEY_DURATION);
+            String album_im= mmr.extractMetadata(METADATA_KEY_ALBUM);
+            String artist_im= mmr.extractMetadata(METADATA_KEY_ARTIST);
+
+             **/
+
+
+            //mmr.release();
+
+
+
+
+            Intent ii= new Intent(AllSongsView.this, IndSongView.class);
+            /**Bundle b=new Bundle();
+            b.putString("songname",song_im);
+            b.putString("duration",duration_im);
+            b.putString("album",album_im);
+            b.putString("artist",artist_im);
+            ii.putExtras(b);
+
+            **/
+
+            //ii.putExtra("songname",song_im);
+            //ii.putExtra("songid",id_im);
+            //ii.putExtra("songname",song_im);
+            //ii.putExtra("songartist",artist_im);
+            //ii.putExtra("songalbum",album_im);
+            //ii.putExtra("duration",duration_im);
+            //ii.putExtra("image",songImage);
+            //ii.putExtra("image",byteimage)
+            ii.putExtra("path",filepath);
+            startActivity(ii);
         }
     };
 
@@ -128,7 +198,6 @@ public class AllSongsView extends Activity {
     protected void onPause() {
         unbindService(serviceConnection);
         super.onPause();
-
     }
 
     @Override

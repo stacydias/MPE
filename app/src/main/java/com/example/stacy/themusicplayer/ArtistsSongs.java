@@ -29,7 +29,6 @@ import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
 public class ArtistsSongs extends AppCompatActivity {
 
-
     private Cursor audiocursor;
     private int song_column_index;
     ListView videolist;
@@ -43,8 +42,19 @@ public class ArtistsSongs extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_songs_view);
-        init_phone_music_grid();
+        setContentView(R.layout.activity_artists_songs);
+        Intent i = getIntent();
+        /**
+        if(i==null){
+            init_phone_music_grid();
+        }
+         else {**/
+            String where;
+            String [] whereVal;
+            where = i.getStringExtra("where");
+            whereVal = i.getStringArrayExtra("whereVal");
+            init_phone_music_grid(where, whereVal);
+        //}
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -70,13 +80,18 @@ public class ArtistsSongs extends AppCompatActivity {
         }
     }
 
-    private void init_phone_music_grid(){
-        String []proj={
+    private void init_phone_music_grid(String where, String[] whereVal){
+        String []proj = {
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.DISPLAY_NAME,
                 MediaStore.Audio.Media.SIZE
         };
+
+        /**
+    private void init_phone_music_grid()    {
+        init_phone_music_grid(null, null);
+         }; **/
 
         audiocursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,proj,null,null,null);
         count = audiocursor.getCount();
