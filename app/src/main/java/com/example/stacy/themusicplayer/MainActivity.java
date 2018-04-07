@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         if(account==null) {
             tv.setText("Not signed in");
         } else {
-            tv.setText("Hello, " + account.getDisplayName());
+            tv.setText("Welcome back, " + account.getDisplayName());
         }
     }
 

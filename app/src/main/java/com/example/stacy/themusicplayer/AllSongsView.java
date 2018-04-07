@@ -142,53 +142,10 @@ public class AllSongsView extends Activity {
             }**/
 
 
-            /**
-            musicService.setSong(filename, position);
-            musicService.playSong();
-
-            String id_im=null;
-            int dataIndex = audiocursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-            audiocursor.moveToPosition(position);
-            String filepath = audiocursor.getString(dataIndex);
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(filepath);
-
-            if (mmr.extractMetadata(METADATA_KEY_TITLE) == null) {
-                song_column_index = audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
-                audiocursor.moveToPosition(position);
-                id_im = audiocursor.getString(song_column_index);
-            }
-            String song_im=mmr.extractMetadata(METADATA_KEY_TITLE);
-            String duration_im = mmr.extractMetadata(METADATA_KEY_DURATION);
-            String album_im= mmr.extractMetadata(METADATA_KEY_ALBUM);
-            String artist_im= mmr.extractMetadata(METADATA_KEY_ARTIST);
-
-             **/
-
-
             //mmr.release();
 
 
-
-
             Intent ii= new Intent(AllSongsView.this, IndSongView.class);
-            /**Bundle b=new Bundle();
-            b.putString("songname",song_im);
-            b.putString("duration",duration_im);
-            b.putString("album",album_im);
-            b.putString("artist",artist_im);
-            ii.putExtras(b);
-
-            **/
-
-            //ii.putExtra("songname",song_im);
-            //ii.putExtra("songid",id_im);
-            //ii.putExtra("songname",song_im);
-            //ii.putExtra("songartist",artist_im);
-            //ii.putExtra("songalbum",album_im);
-            //ii.putExtra("duration",duration_im);
-            //ii.putExtra("image",songImage);
-            //ii.putExtra("image",byteimage)
             ii.putExtra("path",filepath);
             startActivity(ii);
         }
@@ -206,7 +163,38 @@ public class AllSongsView extends Activity {
         musicService = null;
         super.onDestroy();
     }
+    public String convertDuration(long duration) {
+        String out = null;
+        long hours=0;
+        try {
+            hours = (duration / 3600000);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return out;
+        }
+        long remaining_minutes = (duration - (hours * 3600000)) / 60000;
+        String minutes = String.valueOf(remaining_minutes);
+        if (minutes.equals(0)) {
+            minutes = "00";
+        }
+        long remaining_seconds = (duration - (hours * 3600000) - (remaining_minutes * 60000));
+        String seconds = String.valueOf(remaining_seconds);
+        if (seconds.length() < 2) {
+            seconds = "00";
+        } else {
+            seconds = seconds.substring(0, 2);
+        }
 
+        if (hours > 0) {
+            out = hours + ":" + minutes + ":" + seconds;
+        } else {
+            out = minutes + ":" + seconds;
+        }
+
+        return out;
+
+    }
     public class MusicAdapter extends BaseAdapter{
 
         private Context mContext;
@@ -240,7 +228,7 @@ public class AllSongsView extends Activity {
 
                 holder = new ViewHolder();
                 holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
-                holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
+                //holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
                 holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
                 holder.song_album=(TextView) convertView.findViewById(R.id.textView8);
                 holder.thumbImage=(ImageView) convertView.findViewById(R.id.imageView2);
@@ -267,7 +255,11 @@ public class AllSongsView extends Activity {
                     id = audiocursor.getString(song_column_index);
                     holder.song_title.setText(id);
                 }
-                holder.song_duration.setText(mmr.extractMetadata(METADATA_KEY_DURATION));
+
+                long dura=Long.parseLong(mmr.extractMetadata(METADATA_KEY_DURATION));
+
+                String du= convertDuration(dura);
+                //holder.song_duration.setText(du);
                 holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
                 holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
                 byte[] art = mmr.getEmbeddedPicture();

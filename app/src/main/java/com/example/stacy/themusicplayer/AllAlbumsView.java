@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,7 +30,8 @@ import java.util.List;
 public class AllAlbumsView extends AppCompatActivity {
     private Cursor audiocursor;
     private int song_column_index;
-    ListView songlist;
+    GridView songlist;
+    GridView gridView;
     int count;
     MediaPlayer mp;
     String WHERE = android.provider.MediaStore.Audio.Media.ALBUM + "=?";
@@ -40,7 +42,6 @@ public class AllAlbumsView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_albums_view);
-
 
         init_phone_music_grid();
     }
@@ -131,7 +132,7 @@ public class AllAlbumsView extends AppCompatActivity {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.albumgrid,parent,false);
 
                 holder = new ViewHolder();
-                holder.album_name = (TextView)convertView.findViewById(R.id.albumname);
+                //holder.album_name = (TextView)convertView.findViewById(R.id.albumname);
 
                 holder.album_art =(ImageView) convertView.findViewById(R.id.imageView4);
 

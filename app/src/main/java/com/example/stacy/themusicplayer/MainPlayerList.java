@@ -18,7 +18,7 @@ public class MainPlayerList extends ListActivity {
         //myProgress();
     }
 
-    String []ar={"All Songs View", "All Artists View", "All Albums View" };
+    String []ar={"All Songs", "Artists", "Albums" };
 
     Class []c={AllSongsView.class, AllArtistsView.class, AllAlbumsView.class };
 

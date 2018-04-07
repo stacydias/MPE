@@ -47,6 +47,40 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
     private Cursor audiocursor;
     private int song_column_index;
 
+
+    public String convertDuration(long duration) {
+        String out = null;
+        long hours=0;
+        try {
+            hours = (duration / 3600000);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return out;
+        }
+        long remaining_minutes = (duration - (hours * 3600000)) / 60000;
+        String minutes = String.valueOf(remaining_minutes);
+        if (minutes.equals(0)) {
+            minutes = "00";
+        }
+        long remaining_seconds = (duration - (hours * 3600000) - (remaining_minutes * 60000));
+        String seconds = String.valueOf(remaining_seconds);
+        if (seconds.length() < 2) {
+            seconds = "00";
+        } else {
+            seconds = seconds.substring(0, 2);
+        }
+
+        if (hours > 0) {
+            out = hours + ":" + minutes + ":" + seconds;
+        } else {
+            out = minutes + ":" + seconds;
+        }
+
+        return out;
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,12 +98,11 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
         pb = (ProgressBar) findViewById(R.id.progressBar2);
 
         //rewind_b.setOnClickListener(this);
-
         //String songname_ex = getIntent().getStringExtra("songname");
         //Log.d("OUTPUTS", "songname_ex ka output"+songname_ex);
         String path_ex = getIntent().getStringExtra("path");
         //Bitmap bitmap = getIntent().getParcelableExtra("image");
-        Log.d("OUTPUTS", "path_id ka output"+path_ex);
+        //Log.d("OUTPUTS", "path_id ka output"+path_ex);
 
 
         serviceConnection = new ServiceConnection() {
@@ -86,18 +119,16 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
             }
         };
-
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(path_ex);
-        Log.d("MONKEYS", "mmr value: "+mmr.toString());
 
-        String beep=mmr.extractMetadata(METADATA_KEY_TITLE);
-        songname.setText(beep);
-        Log.d("bubs", "songname after mmr"+beep);
-        duration.setText(mmr.extractMetadata(METADATA_KEY_DURATION));
-        Log.d("bubble", "duration after mmr"+duration);
+        songname.setText(mmr.extractMetadata(METADATA_KEY_TITLE));
+
+        final long dura=Long.parseLong(mmr.extractMetadata(METADATA_KEY_DURATION));
+        //String du= convertDuration(dura);
+        //duration.setText(du);
+
         artistname.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));
-        Log.d("bubbles", "artistname after mmr"+artistname);
         byte[] art = mmr.getEmbeddedPicture();
         if (art != null) {
             Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);
@@ -133,21 +164,17 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
                 if (mp.isPlaying() == false) {
                     mp.start();
-                    double c = mp.getDuration();
-                    double d = c / 1000;
-                    double e = d / 60;
-                    double f = d % 60;
-                    duration.setText((int) e + ":" + (int) f);
+                    long c = mp.getDuration();
+                    String dura=convertDuration(c);
+                    duration.setText(dura);
                     play_b.setBackgroundDrawable(getResources().getDrawable(R.drawable.pause));
                 }
                 else{
                     mp.pause();
-                    //double c = mp.getCurrentPosition();
-                    double c = mp.getDuration();
-                    double d = c / 1000;
-                    double e = d / 60;
-                    double f = d % 60;
-                    duration.setText((int) e + ":" + (int) f);
+                    //long c = mp.getCurrentPosition();
+                    long c = mp.getDuration();
+                    String dura=convertDuration(c);
+                    duration.setText(dura);
                     play_b.setBackgroundDrawable(getResources().getDrawable(R.drawable.play));
                 }
 
@@ -159,11 +186,9 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
             public void onClick(View view) {
                 if (mp.getDuration() > (mp.getCurrentPosition() - 5000)) {
                     mp.seekTo(mp.getCurrentPosition() - 5000);    //rewinds by 5 seconds
-                    double c = mp.getCurrentPosition();
-                    double d = c / 1000;
-                    double e = d / 60;
-                    double f = d % 60;
-                    duration.setText((int) e + ":" + (int) f);
+                    long c = mp.getCurrentPosition();
+                    String dura=convertDuration(c);
+                    duration.setText(dura);
                 }
 
             }
@@ -175,11 +200,16 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
                 if (mp.getDuration() > (mp.getCurrentPosition() + 5000)) {
                     mp.seekTo(mp.getCurrentPosition() + 5000);    //forwards by 5 seconds
+                    long c = mp.getCurrentPosition();
+                    String dura=convertDuration(c);
+                    duration.setText(dura);
+
+                    /**
                     double c = mp.getCurrentPosition();
                     double d = c / 1000;
                     double e = d / 60;
                     double f = d % 60;
-                    duration.setText((int) e + ":" + (int) f);
+                    duration.setText((int) e + ":" + (int) f);**/
                 }
             }
         });
@@ -195,7 +225,6 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
 
     }
-
     @Override
     protected void onPause() {
         super.onPause();

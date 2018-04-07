@@ -159,7 +159,7 @@ public class ArtistsSongs extends AppCompatActivity {
 
                 holder = new AllSongsView.ViewHolder();
                 holder.song_title =(TextView) convertView.findViewById(R.id.textView11);
-                holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
+                //holder.song_duration=(TextView) convertView.findViewById(R.id.textView10);
                 holder.song_artist=(TextView) convertView.findViewById(R.id.textView9);
                 holder.song_album=(TextView) convertView.findViewById(R.id.textView8);
                 holder.thumbImage=(ImageView) convertView.findViewById(R.id.imageView2);
