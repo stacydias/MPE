@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,13 +38,24 @@ public class AllAlbumsView extends AppCompatActivity {
     String WHERE = android.provider.MediaStore.Audio.Media.ALBUM + "=?";
     String orderby = null;
     MusicAdapter musicAdapter = null;
+    Button back3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_albums_view);
-
         init_phone_music_grid();
+
+        back3=findViewById(R.id.back_button3);
+
+        back3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent ib=new Intent(AllAlbumsView.this,MainPlayerList.class);
+                startActivity(ib);
+            }
+        });
     }
 
 
@@ -75,11 +87,6 @@ public class AllAlbumsView extends AppCompatActivity {
     AdapterView.OnItemClickListener musicgridlistener=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            song_column_index=audiocursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
-//            audiocursor.moveToPosition(position);
-//
-//            String filename=audiocursor.getString(song_column_index);
-//            String albumname=MediaStore.Audio.Media.ALBUM_ID;
             String query = (String)  songlist.getAdapter().getItem(position);
             String whereVal[] = { query};
             /*try{
@@ -139,7 +146,7 @@ public class AllAlbumsView extends AppCompatActivity {
                 song_column_index= audiocursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
                 audiocursor.moveToPosition(position);
                 id=audiocursor.getString(song_column_index);
-                holder.album_name.setText(id);
+                //holder.album_name.setText(id);
 
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 int albumartIndex = audiocursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);

@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/VioTheme" />
         <activity android:name=".MainPlayerList" />
         <activity android:name=".AllSongsView" />
@@ -32,7 +33,8 @@
             android:enabled="true" />
 
         <activity android:name=".ArtistsSongs" />
-        <activity android:name=".IndSongView"></activity>
+        <activity android:name=".IndSongView" />
+        <activity android:name=".AlbumSongs"></activity>
     </application>
 
 </manifest>

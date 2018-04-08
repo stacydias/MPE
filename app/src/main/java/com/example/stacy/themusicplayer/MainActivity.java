@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         b= (Button)findViewById(R.id.button);
+
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = findViewById(R.id.signin);
         if(account==null) {
             tv.setText("Not signed in");
+            b.setBackgroundDrawable(getResources().getDrawable(R.drawable.login2));
         } else {
             tv.setText("Welcome back, " + account.getDisplayName());
         }

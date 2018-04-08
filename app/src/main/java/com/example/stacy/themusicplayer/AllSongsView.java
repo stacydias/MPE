@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,11 +43,13 @@ public class AllSongsView extends Activity {
     private Intent playIntent;
     private boolean isBound = false;
     private ServiceConnection serviceConnection;
+    Button back1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_songs_view);
+        back1= findViewById(R.id.back_button1);
         Intent i = getIntent();
         if(i==null){
             init_phone_music_grid();
@@ -70,6 +73,16 @@ public class AllSongsView extends Activity {
                 isBound = false;
             }
         };
+
+        back1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent ib=new Intent(AllSongsView.this,MainPlayerList.class);
+                startActivity(ib);
+            }
+        });
+
 
     }
 
@@ -163,38 +176,7 @@ public class AllSongsView extends Activity {
         musicService = null;
         super.onDestroy();
     }
-    public String convertDuration(long duration) {
-        String out = null;
-        long hours=0;
-        try {
-            hours = (duration / 3600000);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return out;
-        }
-        long remaining_minutes = (duration - (hours * 3600000)) / 60000;
-        String minutes = String.valueOf(remaining_minutes);
-        if (minutes.equals(0)) {
-            minutes = "00";
-        }
-        long remaining_seconds = (duration - (hours * 3600000) - (remaining_minutes * 60000));
-        String seconds = String.valueOf(remaining_seconds);
-        if (seconds.length() < 2) {
-            seconds = "00";
-        } else {
-            seconds = seconds.substring(0, 2);
-        }
 
-        if (hours > 0) {
-            out = hours + ":" + minutes + ":" + seconds;
-        } else {
-            out = minutes + ":" + seconds;
-        }
-
-        return out;
-
-    }
     public class MusicAdapter extends BaseAdapter{
 
         private Context mContext;
@@ -256,9 +238,8 @@ public class AllSongsView extends Activity {
                     holder.song_title.setText(id);
                 }
 
-                long dura=Long.parseLong(mmr.extractMetadata(METADATA_KEY_DURATION));
+                //long dura=Long.parseLong(mmr.extractMetadata(METADATA_KEY_DURATION));
 
-                String du= convertDuration(dura);
                 //holder.song_duration.setText(du);
                 holder.song_album.setText(mmr.extractMetadata(METADATA_KEY_ALBUM));
                 holder.song_artist.setText(mmr.extractMetadata(METADATA_KEY_ARTIST));

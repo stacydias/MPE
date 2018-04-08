@@ -19,26 +19,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
 import java.io.File;
-
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
-public class IndSongView extends AppCompatActivity implements View.OnClickListener{
+public class IndSongView extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnSeekCompleteListener {
 
     TextView songname, duration, artistname;
-    Button rewind_b, fastforward_b, shuffle_b, repeat_b, back_b;
+    Button rewind_b, fastforward_b, stop_b, repeat_b, back_b;
     ImageView albumart;
     ToggleButton play_b;
     MediaPlayer mp;
-    ProgressBar pb;
+    SeekBar sb;
     public MusicService musicService;
     private boolean isBound = false;
     private ServiceConnection serviceConnection;
@@ -50,7 +47,7 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
     public String convertDuration(long duration) {
         String out = null;
-        long hours=0;
+        long hours=00;
         try {
             hours = (duration / 3600000);
         } catch (Exception e) {
@@ -91,15 +88,13 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
         play_b = (ToggleButton) findViewById(R.id.play_button);
         rewind_b = findViewById(R.id.rewind_button);
         fastforward_b = findViewById(R.id.fastforward_button);
-        shuffle_b = findViewById(R.id.shuffle_button);
+        stop_b = findViewById(R.id.stop_button);
         repeat_b = findViewById(R.id.repeat_button);
         back_b=findViewById(R.id.back_button);
         albumart=findViewById(R.id.album_art_view);
-        pb = (ProgressBar) findViewById(R.id.progressBar2);
+        sb = (SeekBar) findViewById(R.id.seekBar);
 
         //rewind_b.setOnClickListener(this);
-        //String songname_ex = getIntent().getStringExtra("songname");
-        //Log.d("OUTPUTS", "songname_ex ka output"+songname_ex);
         String path_ex = getIntent().getStringExtra("path");
         //Bitmap bitmap = getIntent().getParcelableExtra("image");
         //Log.d("OUTPUTS", "path_id ka output"+path_ex);
@@ -150,6 +145,17 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
             e.printStackTrace();
         }
 
+        //sb.setMax(mp.getDuration());
+/**
+        Thread t=new Thread(){
+            public void run(){
+                while(true){
+                    sb.setProgress(mp.getCurrentPosition());
+                }
+            }
+        };
+        t.start();**/
+
         back_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,17 +170,20 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
 
                 if (mp.isPlaying() == false) {
                     mp.start();
-                    long c = mp.getDuration();
+                    duration.setText("00:00");
+                    long c = mp.getCurrentPosition();
                     String dura=convertDuration(c);
                     duration.setText(dura);
                     play_b.setBackgroundDrawable(getResources().getDrawable(R.drawable.pause));
+                    Log.d("PLAY", "duration =  "+dura);
                 }
                 else{
                     mp.pause();
                     //long c = mp.getCurrentPosition();
-                    long c = mp.getDuration();
+                    long c = mp.getCurrentPosition();
                     String dura=convertDuration(c);
                     duration.setText(dura);
+                    Log.d("PLAY", "duration =  "+dura);
                     play_b.setBackgroundDrawable(getResources().getDrawable(R.drawable.play));
                 }
 
@@ -222,6 +231,13 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
             }
         });
 
+        stop_b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mp.stop();
+            }
+        });
+
 
 
     }
@@ -244,5 +260,36 @@ public class IndSongView extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
 
+    }
 
-}}
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        long c = mp.getCurrentPosition();
+        String dura=convertDuration(c);
+        duration.setText(dura);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        long c = mp.getCurrentPosition();
+        String dura=convertDuration(c);
+        duration.setText(dura);
+    }
+
+    @Override
+    public void onSeekComplete(MediaPlayer mediaPlayer) {
+    mp.seekTo(0);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+        if(b==true){
+            mp.seekTo(i);
+        }
+        long c = mp.getCurrentPosition();
+        String dura=convertDuration(c);
+        duration.setText(dura);
+
+    }
+}

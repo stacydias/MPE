@@ -8,8 +8,8 @@
 
     <Button
         android:id="@+id/back_button"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="38dp"
+        android:layout_height="36dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/back" />
@@ -63,12 +63,12 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/shuffle_button"
+            android:id="@+id/stop_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/play_button"
             android:layout_toEndOf="@+id/back_button"
-            android:background="@drawable/shuffle" />
+            android:background="@drawable/stop" />
 
         <Button
             android:id="@+id/rewind_button"
@@ -101,19 +101,30 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignStart="@+id/pause_button"
-            android:background="@drawable/repeat" />
+            android:background="@drawable/repeat"
+            android:drawablePadding="15dp" />
 
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="250dp"
+    <SeekBar
+        android:id="@+id/seekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="221dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/duration"
-        android:layout_centerHorizontal="true" />
-
+        android:layout_centerHorizontal="true"
+        android:max="10"
+        android:progress="3" />
+    <!--
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/duration"
+            android:layout_centerHorizontal="true" />
+    -->
 
 
 </RelativeLayout>

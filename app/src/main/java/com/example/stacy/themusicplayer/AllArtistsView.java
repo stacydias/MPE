@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,14 +37,24 @@ public class AllArtistsView extends AppCompatActivity {
     String orderby = null;
     int count;
     MediaPlayer mp;
+    Button back2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_artists_view);
-
-
         init_phone_music_grid();
+
+        back2=findViewById(R.id.back_button2);
+
+        back2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent ib=new Intent(AllArtistsView.this,MainPlayerList.class);
+                startActivity(ib);
+            }
+        });
     }
     private void init_phone_music_grid(){
         String []proj = {
