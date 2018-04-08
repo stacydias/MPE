@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +34,7 @@ import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_LOCATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 
-public class AllSongsView extends Activity {
+public class AllSongsView extends AppCompatActivity {
 
     private Cursor audiocursor;
     private int song_column_index;
@@ -50,6 +52,9 @@ public class AllSongsView extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_songs_view);
         back1= findViewById(R.id.back_button1);
+        Toolbar myToolbar = findViewById(R.id.songs_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(R.string.all_songs_act);
         Intent i = getIntent();
         if(i==null){
             init_phone_music_grid();

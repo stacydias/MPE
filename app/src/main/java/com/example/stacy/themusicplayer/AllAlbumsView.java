@@ -23,6 +23,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class AllAlbumsView extends AppCompatActivity {
         init_phone_music_grid();
 
         back3=findViewById(R.id.back_button3);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.album_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(R.string.album_act);
 
         back3.setOnClickListener(new View.OnClickListener() {
             @Override
